@@ -62,8 +62,21 @@ class IssueListCreateAPIView(APIView):
     def post(self, request):
         serializer = IssuedSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
+            book_id=request.data.get('book')
+            try:
+                book=Book.objects.get(id=book_id)
+                if book.quantity<=0:
+                    return Response({"error":"Book not available"},status=status.HTTP_400_BAD_REQUEST)
+                book.quantity-=1
+                book.save()
+                
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            except Book.DoesNotExist:
+                return Response({"error":"Book does not exist"},status=status.HTTP_400_BAD_REQUEST)
+            
+        serializer.save()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     def put(self, request, pk):

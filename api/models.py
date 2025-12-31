@@ -8,7 +8,6 @@ class Book(models.Model):
     published_date = models.DateField()
     isbn_number = models.CharField(max_length=13, unique=True)
     quantity = models.PositiveIntegerField(default=0)
-    available=models.PositiveIntegerField(default=0)
     
     def __str__(self):
         return self.title
