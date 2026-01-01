@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from .serializer import BookSerializer, IssuedSerializer
 from .models import Book, issued
 from rest_framework import status
+from datetime import date
 
 # Create your views here.
 
@@ -76,7 +77,6 @@ class IssueListCreateAPIView(APIView):
             except Book.DoesNotExist:
                 return Response({"error":"Book does not exist"},status=status.HTTP_400_BAD_REQUEST)
             
-        serializer.save()
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     def put(self, request, pk):
@@ -112,4 +112,25 @@ class IssueListCreateAPIView(APIView):
         issued_book.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class BookReturnAPIView(APIView):
+    def patch(self, request, pk):
+        try:
+            issued_book = issued.objects.get(pk=pk)
+        except issued.DoesNotExist:
+            return Response({"error": "Issued book record not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if issued_book.return_date is not None:
+            return Response({"error": "Book has already been returned"}, status=status.HTTP_400_BAD_REQUEST)
     
+        issued_book.return_date = date.today()
+        issued_book.save()
+        
+        book = issued_book.book
+        book.quantity += 1
+        book.save()
+        
+        serializer = IssuedSerializer(issued_book)
+        return Response({
+            "message": "Book returned successfully",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)

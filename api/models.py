@@ -19,6 +19,7 @@ class issued(models.Model):
     issue_date=models.DateField(auto_now_add=True)
     return_date=models.DateField(null=True,blank=True)
     
+    
     def __str__(self):
         return f"{self.book.title} issued to {self.user.username}"        
     
