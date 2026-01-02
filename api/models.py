@@ -13,7 +13,7 @@ class Book(models.Model):
         return self.title
     
         
-class issued(models.Model):
+class IssuedBook(models.Model):
     book=models.ForeignKey(Book,on_delete=models.CASCADE)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     issue_date=models.DateField(auto_now_add=True)

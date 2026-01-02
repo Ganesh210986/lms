@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializer import BookSerializer, IssuedSerializer
-from .models import Book, issued
+from .models import Book, IssuedBook
 from rest_framework import status
 from datetime import date
 
